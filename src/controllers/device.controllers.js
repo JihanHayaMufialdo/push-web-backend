@@ -1,10 +1,8 @@
-const express = require('express');
 const { Device } = require('../models');
 
-const router = express.Router();
-
-router.post('/push-token', async (req, res) => {
+const pushToken = async (req, res) => {
     const { token } = req.body;
+    const userId = req.user.id;
 
     if(!token){
         return res.status(400).json({ error: 'Token is required' });
@@ -12,7 +10,7 @@ router.post('/push-token', async (req, res) => {
 
     try {
         await Device.findOrCreate({
-            where: { token },
+            where: { token, userId },
             defaults: { platform: 'web' },
         });
     
@@ -20,16 +18,15 @@ router.post('/push-token', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-    
-});
+};
 
-router.get('/devices', async (req, res) => {
+const getDevices = async (req, res) => {
     try {
         const devices = await Device.findAll();
         res.json({message: "Request success", devices});
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
-})
+};
 
-module.exports = router;
+module.exports = { pushToken, getDevices };

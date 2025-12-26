@@ -1,26 +1,34 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Device extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+
     static associate(models) {
-      // define association here
+      Device.belongsTo(models.User, {
+        foreignKey: 'userId'
+      });
+      Device.hasMany(models.DeviceNotification, {
+        foreignKey: 'deviceId'
+      });
+      Device.hasMany(models.DeviceTopic, {
+        foreignKey: 'deviceId'
+      });
+      Device.belongsToMany(models.Topic, { 
+        through: models.DeviceTopic,
+        foreignKey: 'deviceId'
+      });
     }
   }
   Device.init({
     token: DataTypes.TEXT,
     platform: DataTypes.ENUM('ios','android','web'),
     isActive: DataTypes.BOOLEAN,
-    metadata: DataTypes.JSONB
+    userId: DataTypes.UUID
   }, {
     sequelize,
     modelName: 'Device',
   });
+
   return Device;
 };

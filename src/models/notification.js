@@ -6,6 +6,9 @@ module.exports = (sequelize, DataTypes) => {
   class Notification extends Model {
 
     static associate(models) {
+      Notification.belongsTo(models.User, {
+        foreignKey: 'sendBy'
+      });
       Notification.hasMany(models.DeviceNotification, {
         foreignKey: 'deviceId'
       });
@@ -15,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     body: DataTypes.TEXT,
     sendBy: DataTypes.UUID,
-    link: DataTypes.STRING
+    link: DataTypes.STRING,
+    status: DataTypes.ENUM('queued','sent','failed'),
   }, {
     sequelize,
     modelName: 'Notification',

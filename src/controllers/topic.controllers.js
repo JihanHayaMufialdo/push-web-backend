@@ -50,19 +50,55 @@ const assignUsersToTopic = async (req, res) => {
         const tokens = devices.map(d => d.token);
 
         // Subscribe tokens in FCM
-        if (tokens.length > 0) {
-            await admin.messaging().subscribeToTopic(tokens, topic.name);
-        }
+        const response = await admin.messaging().subscribeToTopic(
+            tokens, topic.name
+        );
 
         // Store mapping in DB
-        const records = devices.map(d => ({
+        const FATAL_ERRORS = [
+            'messaging/registration-token-not-registered',
+            'messaging/invalid-registration-token'
+        ];
+
+        const invalidDeviceIds = [];
+
+        response.errors.forEach(e => {
+            const device = devices[e.index];
+            const code = e.error.code;
+
+            if (FATAL_ERRORS.includes(code)) {
+                invalidDeviceIds.push(device.id);
+            }
+        });
+
+        if (invalidDeviceIds.length > 0) {
+            await Device.update(
+                { 
+                    isActive: false, 
+                    lastError: 'invalid_token' 
+                },
+                { 
+                    where: { id: invalidDeviceIds } 
+                }
+            );
+        }
+        
+        const validDevices = devices.filter(
+            d => !invalidDeviceIds.includes(d.id)
+        );
+
+        const records = validDevices.map(d => ({
             deviceId: d.id,
             topicId: topic.id
         }));
 
         await DeviceTopic.bulkCreate(records, { ignoreDuplicates: true });
 
-        res.json({ success: true, subscribedDevices: devices.length });
+        res.json({
+            success: true,
+            sent: response.successCount,
+            failed: response.failureCount
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     };

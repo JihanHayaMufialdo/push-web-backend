@@ -3,7 +3,7 @@ const express = require("express");
 const userAuth = require('../middleware/auth.js');
 const adminAuth =  require('../middleware/adminAuth.js')
 const { User } = require('../models');
-const { pushToken, getDevices } = require('../controllers/device.controllers.js');
+const { pushToken, getDevices, getActiveDevices } = require('../controllers/device.controllers.js');
 const { sendToTopic, sendToUsers, getNotifications, getNotificationDevice } = require("../controllers/notification.controllers.js");
 const { createTopic, assignUsersToTopic, getTopics, getTopicUsers } = require("../controllers/topic.controllers.js");
 
@@ -15,6 +15,7 @@ router.get("/", (req, res) => {
 
 router.post('/push-token', userAuth, pushToken);
 router.get('/devices', userAuth, getDevices);
+router.get('/active-devices', userAuth, getActiveDevices);
 
 router.get('/topics', adminAuth, getTopics);
 router.post('/create-topic', adminAuth, createTopic);

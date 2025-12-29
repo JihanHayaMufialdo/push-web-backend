@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Device, {
         foreignKey: 'userId'
       });
+      User.hasMany(models.Notification, {
+        foreignKey: 'sendBy'
+      });
     }
   }
   User.init({

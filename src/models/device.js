@@ -18,13 +18,18 @@ module.exports = (sequelize, DataTypes) => {
         through: models.DeviceTopic,
         foreignKey: 'deviceId'
       });
+      Device.belongsToMany(models.Notification, { 
+        through: models.DeviceNotification,
+        foreignKey: 'deviceId'
+      });
     }
   }
   Device.init({
     token: DataTypes.TEXT,
     platform: DataTypes.ENUM('ios','android','web'),
     isActive: DataTypes.BOOLEAN,
-    userId: DataTypes.UUID
+    userId: DataTypes.UUID,
+    lastError: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Device',

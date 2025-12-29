@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const { Device } = require('../models');
 
 const pushToken = async (req, res) => {
@@ -29,4 +30,17 @@ const getDevices = async (req, res) => {
     }
 };
 
-module.exports = { pushToken, getDevices };
+const getActiveDevices = async (req, res) => {
+    try {
+        const devices = await Device.findAll({
+            where: {
+                isActive: true
+            }
+        });
+        res.json({message: "Request success", devices});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+module.exports = { pushToken, getDevices, getActiveDevices };

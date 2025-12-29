@@ -3,7 +3,19 @@ const admin = require('../config/firebase-admin.js');
 
 const getNotifications = async (req, res) => {
     try {
-        const notifications = await Notification.findAll();
+        const { limit = 20, offset = 0 } = req.query;
+
+        const notifications = await Notification.findAll({
+          limit,
+          offset,
+          order: [['createdAt', 'DESC']],
+          include: [
+            {
+              model: DeviceNotification,
+              include: ['Device']
+            }
+          ],
+        });
         res.json({message: "Request success", notifications});
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -101,25 +113,81 @@ const sendToUsers = async (req, res) => {
         title,
         body,
         sendBy: adminId,
-        link
+        link,
       });
-  
-      // Create logs
-      const logs = devices.map(d => ({ 
-        deviceId: d.id, 
-        notificationId: notification.id, 
-      }));
-  
-      await DeviceNotification.bulkCreate(logs);
 
       // Send via FCM
-      await admin.messaging().sendEachForMulticast({
+      const response = await admin.messaging().sendEachForMulticast({
         tokens,
         notification: { title, body }
         // data: { title, body, link }
       });
+  
+      // Create logs
+      const FATAL_ERRORS = [
+        'messaging/registration-token-not-registered',
+        'messaging/invalid-registration-token'
+      ];
+      
+      const invalidDeviceIds = [];
+      const logs = [];
 
-      res.json({ success: true, devices: devices.length });
+      response.responses.forEach((r, index) => {
+        const device = devices[index];
+
+        if(r.success) {
+          logs.push({
+            deviceId: device.id, 
+            notificationId: notification.id, 
+            status: 'sent'
+          });
+        } else {
+          const errorCode = r.error?.code;
+          logs.push({
+            deviceId: device.id, 
+            notificationId: notification.id, 
+            status: 'failed',
+            // error: r.error?.message
+          });
+
+          if (FATAL_ERRORS.includes(errorCode)) {
+            invalidDeviceIds.push(device.id);
+          }
+        }
+      });
+
+      if (invalidDeviceIds.length > 0) {
+        await Device.update(
+          {
+            isActive: false,
+            lastError: 'invalid_token'
+          },
+          {
+            where: { id: invalidDeviceIds}
+          }
+        );
+      }
+
+      await DeviceNotification.bulkCreate(logs);
+
+      const successCount = response.successCount;
+      const failureCount = response.failureCount;
+
+      let finalStatus = 'failed';
+
+      if (successCount > 0) {
+        finalStatus = 'sent';
+      }
+
+      await notification.update({
+        status: finalStatus
+      });
+
+      res.json({
+        success: true,
+        sent: successCount,
+        failed: failureCount
+      });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

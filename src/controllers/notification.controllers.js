@@ -55,7 +55,7 @@ const sendToTopic = async (req, res) => {
       if (!topic) {
         return res.status(404).json({ error: 'Topic not found' });
       }
-  
+
       // Create notification record
       const notification = await Notification.create({
         title,
@@ -63,29 +63,39 @@ const sendToTopic = async (req, res) => {
         sendBy: adminId,
         link
       });
-  
+
+      // Send via FCM topic
+      try {
+        await admin.messaging().send({
+          topic: topic.name,
+          notification: { title, body },
+          // data: { title, body, link }
+        });
+      
+        await notification.update({ status: 'sent' });
+      } catch (err) {
+        await notification.update({ status: 'failed' });
+        throw err;
+      }
+
       // Get target devices
       const devices = await DeviceTopic.findAll({
         where: {
           topicId
         },
-        include: [{ model: Device }]
+        include: [{ 
+          model: Device,
+          where: { isActive: true }
+        }]
       });
-  
+
       // Create per-device logs
-      const logs = devices.map(d => ({
-        deviceId: d.Device.id,
+      const logs = DeviceTopic.map(dt => ({
+        deviceId: dt.deviceId,
         notificationId: notification.id,
       }));
   
       await DeviceNotification.bulkCreate(logs);
-
-      // Send via FCM topic
-      await admin.messaging().send({
-        topic: topic.name,
-        notification: { title, body }
-        // data: { title, body, link }
-      });
   
       res.json({ success: true, devices: devices.length });
     } catch (err) {

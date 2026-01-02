@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
       Device.belongsTo(models.User, {
-        foreignKey: 'userId'
+        foreignKey: 'nip'
       });
       Device.hasMany(models.DeviceNotification, {
         foreignKey: 'deviceId'
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     token: DataTypes.TEXT,
     platform: DataTypes.ENUM('ios','android','web'),
     isActive: DataTypes.BOOLEAN,
-    userId: DataTypes.UUID,
+    nip: DataTypes.STRING,
     lastError: DataTypes.STRING,
   }, {
     sequelize,

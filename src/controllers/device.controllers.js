@@ -2,8 +2,7 @@ const { where } = require('sequelize');
 const { Device } = require('../models');
 
 const pushToken = async (req, res) => {
-    const { token } = req.body;
-    const userId = req.user.id;
+    const { token, platform, nip } = req.body
 
     if(!token){
         return res.status(400).json({ error: 'Token is required' });
@@ -11,8 +10,7 @@ const pushToken = async (req, res) => {
 
     try {
         await Device.findOrCreate({
-            where: { token, userId },
-            defaults: { platform: 'web' },
+            where: { token, nip, platform },
         });
     
         res.json({ success: true });

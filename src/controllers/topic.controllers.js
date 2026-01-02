@@ -30,7 +30,7 @@ const createTopic = async (req, res) => {
 
 const assignUsersToTopic = async (req, res) => {
     const topicId = req.params.topicId;
-    const { userIds } = req.body;
+    const { nips } = req.body;
 
     try{
         // Get topic
@@ -42,7 +42,7 @@ const assignUsersToTopic = async (req, res) => {
         // Get devices of selected users
         const devices = await Device.findAll({
             where: {
-                userId: userIds,
+                nip: nips,
                 isActive: true
             }
         });
@@ -51,7 +51,8 @@ const assignUsersToTopic = async (req, res) => {
 
         // Subscribe tokens in FCM
         const response = await admin.messaging().subscribeToTopic(
-            tokens, topic.name
+            tokens, 
+            topic.name
         );
 
         // Store mapping in DB

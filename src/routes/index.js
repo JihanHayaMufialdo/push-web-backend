@@ -14,8 +14,8 @@ router.get("/", (req, res) => {
 });
 
 router.post('/push-token', userAuth, pushToken);
-router.get('/devices', userAuth, getDevices);
-router.get('/active-devices', userAuth, getActiveDevices);
+router.get('/devices', adminAuth, getDevices);
+router.get('/active-devices', adminAuth, getActiveDevices);
 
 router.get('/topics', adminAuth, getTopics);
 router.post('/create-topic', adminAuth, createTopic);

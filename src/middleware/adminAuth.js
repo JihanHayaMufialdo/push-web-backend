@@ -1,6 +1,6 @@
 module.exports = (req, res, next) => {
     req.user = {
-      id: '625e4567-e89b-12d3-a456-426614174111',
+      nip: '00000',
     //   role: 'admin'
     };
   
@@ -8,4 +8,19 @@ module.exports = (req, res, next) => {
   
     next();
   };
+
+// module.exports = (req, res, next) => {
+//   const { nip } = req.body;
+
+//   if (!nip) {
+//     return res.status(400).json({ error: 'NIP is required' });
+//   }
+
+//   // attach user object to request
+//   req.user = { nip };
+//   req.isAdmin = true;
+
+//   next();
+// };
+
   

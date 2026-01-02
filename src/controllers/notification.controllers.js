@@ -23,11 +23,11 @@ const getNotifications = async (req, res) => {
 };
 
 const getNotificationDevice = async (req, res) => {
-    const userId = req.user.id;
+    const nips = req.user.nip;
 
     const devices = await Device.findAll({
       where: { 
-        userId: userId 
+        nip: nips
       }
     });
 
@@ -47,7 +47,7 @@ const getNotificationDevice = async (req, res) => {
 
 const sendToTopic = async (req, res) => {
     const { topicId, title, body, link } = req.body;
-    const adminId = req.user.id;
+    const adminNIP = req.user.nip;
   
     try {
       // Get topic
@@ -60,7 +60,7 @@ const sendToTopic = async (req, res) => {
       const notification = await Notification.create({
         title,
         body,
-        sendBy: adminId,
+        sendBy: adminNIP,
         link
       });
 
@@ -68,8 +68,8 @@ const sendToTopic = async (req, res) => {
       try {
         await admin.messaging().send({
           topic: topic.name,
-          notification: { title, body },
-          // data: { title, body, link }
+          // notification: { title, body },
+          data: { title, body, link }
         });
       
         await notification.update({ status: 'sent' });
@@ -90,7 +90,7 @@ const sendToTopic = async (req, res) => {
       });
 
       // Create per-device logs
-      const logs = DeviceTopic.map(dt => ({
+      const logs = devices.map(dt => ({
         deviceId: dt.deviceId,
         notificationId: notification.id,
       }));
@@ -104,14 +104,14 @@ const sendToTopic = async (req, res) => {
 };
 
 const sendToUsers = async (req, res) => {
-    const { userIds, title, body, link } = req.body;
-    const adminId = req.user.id;
+    const { nips, title, body, link } = req.body;
+    const adminNIP = req.user.nip;
   
     try {
       // Get devices
       const devices = await Device.findAll({
         where: {
-          userId: userIds,
+          nip: nips,
           isActive: true
          }
       });
@@ -122,15 +122,14 @@ const sendToUsers = async (req, res) => {
       const notification = await Notification.create({
         title,
         body,
-        sendBy: adminId,
+        sendBy: adminNIP,
         link,
       });
 
       // Send via FCM
       const response = await admin.messaging().sendEachForMulticast({
         tokens,
-        notification: { title, body }
-        // data: { title, body, link }
+        data: { title, body, link }
       });
   
       // Create logs
@@ -159,6 +158,8 @@ const sendToUsers = async (req, res) => {
             status: 'failed',
             // error: r.error?.message
           });
+
+          console.log('ERROR:', r.error);
 
           if (FATAL_ERRORS.includes(errorCode)) {
             invalidDeviceIds.push(device.id);

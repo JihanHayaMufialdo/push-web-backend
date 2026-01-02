@@ -13,6 +13,9 @@ module.exports = (sequelize, DataTypes) => {
         through: models.DeviceTopic,
         foreignKey: 'topicId'
       });
+      Topic.hasMany(models.Notification, { 
+        foreignKey: 'topicId'
+      });
     }
   }
   Topic.init({

@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         through: models.DeviceNotification,
         foreignKey: 'notificationId'
       });
+      Notification.belongsTo(models.Topic, { 
+        foreignKey: 'topicId'
+      });
+      
     }
   }
   Notification.init({
@@ -23,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     body: DataTypes.TEXT,
     sendBy: DataTypes.STRING,
     link: DataTypes.STRING,
+    topicId: DataTypes.INTEGER,
     status: DataTypes.ENUM('queued','sent','failed'),
   }, {
     sequelize,

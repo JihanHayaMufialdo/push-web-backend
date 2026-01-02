@@ -1,4 +1,4 @@
-const { Notification, DeviceNotification, Device, Topic, DeviceTopic } = require('../models');
+const { Notification, DeviceNotification, Device, Topic, DeviceTopic, User } = require('../models');
 const admin = require('../config/firebase-admin.js');
 
 const getNotifications = async (req, res) => {
@@ -11,10 +11,15 @@ const getNotifications = async (req, res) => {
           order: [['createdAt', 'DESC']],
           include: [
             {
-              model: DeviceNotification,
-              include: ['Device']
+              model: Device,
+              include: [
+                {
+                  model: User,  
+                  attributes: ['nip', 'name'] 
+                }
+              ]
             }
-          ],
+          ]
         });
         res.json({message: "Request success", notifications});
     } catch (err) {
@@ -61,14 +66,14 @@ const sendToTopic = async (req, res) => {
         title,
         body,
         sendBy: adminNIP,
-        link
+        link,
+        topicId
       });
 
       // Send via FCM topic
       try {
         await admin.messaging().send({
           topic: topic.name,
-          // notification: { title, body },
           data: { title, body, link }
         });
       

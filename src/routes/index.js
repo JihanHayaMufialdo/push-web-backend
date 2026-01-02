@@ -5,7 +5,7 @@ const adminAuth =  require('../middleware/adminAuth.js')
 const { User } = require('../models');
 const { pushToken, getDevices, getActiveDevices } = require('../controllers/device.controllers.js');
 const { sendToTopic, sendToUsers, getNotifications, getNotificationDevice } = require("../controllers/notification.controllers.js");
-const { createTopic, assignUsersToTopic, getTopics, getTopicUsers } = require("../controllers/topic.controllers.js");
+const { createTopic, assignUsersToTopic, getTopics, getTopicUsers, getTopicNotifications } = require("../controllers/topic.controllers.js");
 
 const router = express.Router();
 
@@ -22,6 +22,7 @@ router.post('/create-topic', adminAuth, createTopic);
 router.post('/topic/:topicId/assign', adminAuth, assignUsersToTopic);
 router.get('/topic/:topicId/users', adminAuth, getTopicUsers);
 // router.post('/topic/:topicId/unassign', adminAuth, unassignUsersFromTopic);
+router.get('/topic/:topicId/notifications', adminAuth, getTopicNotifications);
 
 router.get('/notifications', adminAuth, getNotifications);
 router.post('/send-topic', adminAuth, sendToTopic);

@@ -1,4 +1,4 @@
-const { Device, Topic, DeviceTopic } = require('../models');
+const { DeviceNotification, Device, Topic, DeviceTopic, Notification, User } = require('../models');
 const admin = require('../config/firebase-admin');
 
 const getTopics = async (req, res) => {
@@ -27,6 +27,45 @@ const createTopic = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+const editTopic = async (req, res) =>{
+
+}
+
+const unsubscribeUsers = async (req,res) => {
+
+}
+
+const getTopicNotifications = async (req, res) => {
+    const { topicId } = req.params;
+
+    try {
+        const topics = await Notification.findAll({
+            where: { topicId },
+            include: [
+                {
+                  model: DeviceNotification,
+                  attributes: [],          
+                  include: [
+                    {
+                      model: Device,
+                      attributes: [],      
+                      include: [
+                        {
+                          model: User,
+                          attributes: ['nip', 'name', 'department'] 
+                        }
+                      ]
+                    }
+                  ]
+                }
+            ],
+        });
+        res.json({message: "Request success", topics});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
 
 const assignUsersToTopic = async (req, res) => {
     const topicId = req.params.topicId;
@@ -120,4 +159,4 @@ const getTopicUsers = async (req, res) => {
     }
 };
 
-module.exports = { getTopics, createTopic, assignUsersToTopic, getTopicUsers };
+module.exports = { getTopics, createTopic, assignUsersToTopic, getTopicUsers, getTopicNotifications };

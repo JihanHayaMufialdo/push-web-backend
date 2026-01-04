@@ -34,11 +34,12 @@ const getNotifications = async (req, res) => {
 
 const sendToTopic = async (req, res) => {
     const { topicId, title, body, link } = req.body;
-    const adminNIP = req.user.nip;
+    const username = req.user.username;
   
     try {
       // Get topic
       const topic = await Topic.findByPk(topicId);
+      
       if (!topic) {
         return res.status(404).json({ error: 'Topic not found' });
       }
@@ -47,7 +48,7 @@ const sendToTopic = async (req, res) => {
       const notification = await Notification.create({
         title,
         body,
-        sendBy: adminNIP,
+        sendBy: username,
         link,
         topicId
       });
@@ -92,7 +93,7 @@ const sendToTopic = async (req, res) => {
 
 const sendToUsers = async (req, res) => {
     const { nips, title, body, link } = req.body;
-    const adminNIP = req.user.nip;
+    const username = req.user.username;
   
     try {
       // Get devices
@@ -109,7 +110,7 @@ const sendToUsers = async (req, res) => {
       const notification = await Notification.create({
         title,
         body,
-        sendBy: adminNIP,
+        sendBy: username,
         link,
       });
 

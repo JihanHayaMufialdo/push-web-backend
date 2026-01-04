@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class Notification extends Model {
 
     static associate(models) {
-      Notification.belongsTo(models.User, {
+      Notification.belongsTo(models.AdminAccount, {
         foreignKey: 'sendBy'
       });
       Notification.hasMany(models.DeviceNotification, {

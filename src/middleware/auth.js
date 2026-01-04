@@ -1,6 +1,6 @@
 // module.exports = (req, res, next) => {
 //     req.user = {
-//         nip: '2902'
+//         nip: '14045'
 //     };
 
 //     next();

@@ -4,7 +4,7 @@ const config = require('../config/auth')
 const { AdminAccount } = require('../models')
 
 const signIn = async (req, res) => {
-    const { username } = req.body;
+    const { username, password } = req.body;
 
     try{
         const account = await AdminAccount.findOne({
@@ -17,7 +17,7 @@ const signIn = async (req, res) => {
             return res.status(404).json({ error: 'Account Not Found'});
         }
 
-        const passwordIsValid = bcrypt.compareSync(req.body.password, account.password);
+        const passwordIsValid = bcrypt.compareSync(password, account.password);
         if (!passwordIsValid) {
             return res.status(401).json({ errors: "Invalid Password!" });
         }
@@ -28,13 +28,22 @@ const signIn = async (req, res) => {
             expiresIn: 900
         });
 
-        res.json({ auth: true, jwt: token });
+        res.json({ auth: true, access_token: token });
     } catch(err) {
         res.status(500).json({ error: err.message });
     };
 };
 
-module.exports = { signIn };
+const signOut = (req, res) => {
+	res.status(200).json({
+	  auth: false,
+	  access_token: null,
+	  message: 'Signed out'
+	});
+};
+  
+
+module.exports = { signIn, signOut };
 
     // signup(req, res) {
 	// 	return User

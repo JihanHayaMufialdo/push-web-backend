@@ -9,7 +9,7 @@ const { getAllDevices, getActiveDevices } = require('../controllers/admin/device
 const { sendToTopic, sendToUsers, getNotifications } = require("../controllers/admin/notification.controllers.js");
 const { createTopic, assignUsersToTopic, getTopics, getTopicUsers, getTopicNotifications, updateTopic, unassignUsersFromTopic } = require("../controllers/admin/topic.controllers.js");
 const { getUserTopics, getUserDevices, getEachUserNotifications } = require("../controllers/admin/user.controllers.js");
-const { signIn } = require("../controllers/auth.controllers.js");
+const { signIn, signOut } = require("../controllers/auth.controllers.js");
 
 const router = express.Router();
 
@@ -18,6 +18,7 @@ router.get("/", (req, res) => {
 });
 
 router.post('/auth/signin', signIn);
+router.post('/auth/signout', signOut);
 
 router.get('/admin/devices', adminAuth, getAllDevices);
 router.get('/admin/active-devices', adminAuth, getActiveDevices);

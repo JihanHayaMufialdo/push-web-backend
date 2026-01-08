@@ -25,7 +25,7 @@ const signIn = async (req, res) => {
         const token = jwt.sign({
             username: account.username
         }, config.jwt.secret, {
-            expiresIn: 900
+            expiresIn: 86400
         });
 
         res.json({ auth: true, access_token: token });

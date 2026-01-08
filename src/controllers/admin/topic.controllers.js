@@ -1,14 +1,47 @@
-const { DeviceNotification, Device, Topic, DeviceTopic, Notification, User } = require('../../models');
+const { AdminAccount, Device, Topic, DeviceTopic, Notification, User } = require('../../models');
 const admin = require('../../config/firebase-admin');
 
 const getTopics = async (req, res) => {
     try {
-        const topics = await Topic.findAll();
+        const topics = await Topic.findAll({
+            order: [['updatedAt', 'DESC']],
+            include: [
+                {
+                    model: DeviceTopic,
+                    attributes: ['id'],
+                    include: [
+                        {
+                            model: Device,
+                            attributes: ['id'],
+                            include: [
+                                {
+                                    model: User,
+                                    attributes: ['nip']
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        });
         res.json({message: "Request success", topics});
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
+const getTopicById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const topic = await Topic.findOne({
+            where: { id },
+        });
+        res.json({message: "Request success", topic});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 
 const createTopic = async (req, res) => {
     const { name, description } = req.body;
@@ -215,28 +248,10 @@ const getTopicNotifications = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const topics = await Notification.findAll({
-            where: { topicId: id },
-            include: [
-                {
-                  model: DeviceNotification,
-                  attributes: [],          
-                  include: [
-                    {
-                      model: Device,
-                      attributes: [],      
-                      include: [
-                        {
-                          model: User,
-                          attributes: ['nip', 'name', 'department'] 
-                        }
-                      ]
-                    }
-                  ]
-                }
-            ],
+        const notifications = await Notification.findAll({
+            where: { topicId: id }
         });
-        res.json({message: "Request success", topics});
+        res.json({message: "Request success", notifications});
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -262,7 +277,7 @@ const getTopicUsers = async (req, res) => {
                     include: [
                         {
                             model: User,
-                            attributes: ['nip', 'name']
+                            attributes: ['nip', 'name', 'department']
                         }
                     ]
                 }
@@ -276,4 +291,4 @@ const getTopicUsers = async (req, res) => {
     }
 };
 
-module.exports = { getTopics, createTopic, updateTopic, assignUsersToTopic, unassignUsersFromTopic, getTopicUsers, getTopicNotifications };
+module.exports = { getTopics, getTopicById, createTopic, updateTopic, assignUsersToTopic, unassignUsersFromTopic, getTopicUsers, getTopicNotifications };

@@ -3,33 +3,45 @@ const admin = require('../../config/firebase-admin');
 
 const getNotifications = async (req, res) => {
     try {
-        const { limit = 20, offset = 0 } = req.query;
+        const { limit = 10, offset = 0 } = req.query;
 
         const notifications = await Notification.findAll({
           limit,
           offset,
           order: [['createdAt', 'DESC']],
-          attributes: ['title','body','link','sendBy','status','createdAt'],
           include: [
             {
-              model: Device,
-              attributes: ['platform'],
+              model: Topic,
+              attributes: ['name']
+            },
+            {
+              model: DeviceNotification,
+              attributes: ['status'],
               include: [
                 {
-                  model: User,
-                  attributes: ['nip', 'name']
+                  model: Device,
+                  attributes: ['platform','nip'],
                 }
-              ],
-              through: {
-                attributes: []
-              },
-            }
+              ]
+            },
           ]
         });
         res.json({message: "Request success", notifications});
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+};
+
+const getNotificationById = async (req, res) => {
+  const { id } = req.params;
+  try {
+      const notification = await Notification.findOne({
+          where: { id },
+      });
+      res.json({message: "Request success", notification});
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
 };
 
 const sendToTopic = async (req, res) => {
@@ -144,7 +156,6 @@ const sendToUsers = async (req, res) => {
             deviceId: device.id, 
             notificationId: notification.id, 
             status: 'failed',
-            // error: r.error?.message
           });
 
           console.log('ERROR:', r.error);
@@ -192,4 +203,27 @@ const sendToUsers = async (req, res) => {
     }
 };
 
-module.exports = { sendToTopic, sendToUsers, getNotifications }
+const getNotificationUsers = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      const users = await DeviceNotification.findAll({
+          where: {
+              notificationId: id
+          },
+          include: [
+            {
+              model: Device,
+              attributes: ['platform', 'nip'],
+            }
+          ]
+      });
+
+
+      res.json({message: "Request success", users});
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { sendToTopic, sendToUsers, getNotifications, getNotificationById, getNotificationUsers }

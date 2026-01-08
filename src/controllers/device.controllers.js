@@ -2,18 +2,23 @@
 const { Device } = require('../models');
 
 const pushToken = async (req, res) => {
-    const { token, platform, nip } = req.body
-    // const { token, platform = 'web' } = req.body;
-    // const nip = req.user.nip;
+    const { nip, token, platform } = req.body
 
     if(!token){
         return res.status(400).json({ error: 'Token is required' });
     }
 
     try {
-        await Device.findOrCreate({
-            where: { token, nip, platform },
-        });
+        const device = await Device.findOne({ where: { token, nip, platform } });
+
+        if (device) {
+          if (!device.isActive) {
+            await device.update({ isActive: true });
+          }
+        } else {
+          await Device.create({ token, nip, platform, isActive: true });
+        }
+    
     
         res.json({ success: true });
     } catch (err) {
@@ -22,7 +27,7 @@ const pushToken = async (req, res) => {
 };
 
 const getDevices = async (req, res) => {
-    const nip = req.user.nip;
+    const { nip } = req.user;
 
     try {
         const devices = await Device.findAll({

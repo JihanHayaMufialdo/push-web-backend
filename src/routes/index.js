@@ -9,7 +9,7 @@ const { getAllDevices, getActiveDevices } = require('../controllers/admin/device
 const { sendToTopic, sendToUsers, getNotifications, getNotificationById, getNotificationUsers } = require("../controllers/admin/notification.controllers.js");
 const { createTopic, assignUsersToTopic, getTopics, getTopicUsers, getTopicNotifications, updateTopic, unassignUsersFromTopic, getTopicById } = require("../controllers/admin/topic.controllers.js");
 const { getUserTopics, getUserDevices, getEachUserNotifications } = require("../controllers/admin/user.controllers.js");
-const { signIn, signOut } = require("../controllers/auth.controllers.js");
+const { signIn, signOut, deviceLogout } = require("../controllers/auth.controllers.js");
 
 const router = express.Router();
 
@@ -42,7 +42,8 @@ router.get('/admin/user/:nip/devices', adminAuth, getUserDevices);
 router.get('/admin/user/:nip/topics', adminAuth, getUserTopics);
 router.get('/admin/user/:nip/notifications', adminAuth, getEachUserNotifications);
 
-router.post('/push-token', userAuth, pushToken);
+router.post('/push-token', pushToken);
+router.put('/logout', deviceLogout);
 router.get('/user-devices', userAuth, getDevices);
 router.get('/user-notifications', userAuth, getUserNotifications);
 

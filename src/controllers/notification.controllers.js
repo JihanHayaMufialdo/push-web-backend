@@ -1,7 +1,7 @@
 const { DeviceNotification, Device, Notification } = require('../models');
 
 const getUserNotifications = async (req, res) => {
-    const nip = req.user.nip;
+    const { nip } = req.user;
 
     const device = await Device.findOne({
       where: { nip }

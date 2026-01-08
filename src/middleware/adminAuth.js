@@ -1,16 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/auth');
 
-// module.exports = (req, res, next) => {
-//   req.user = {
-//     username: 'bpiadmin',
-//   };
-
-//   req.isAdmin = true;
-
-//   next();
-// };
-
 module.exports = (req, res, next) => {
   let token = req.headers['authorization'];
 

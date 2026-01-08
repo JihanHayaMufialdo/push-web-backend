@@ -2,7 +2,7 @@
 const {
   Model
 } = require('sequelize');
-const notification = require('./notification');
+
 module.exports = (sequelize, DataTypes) => {
   class DeviceNotification extends Model {
 

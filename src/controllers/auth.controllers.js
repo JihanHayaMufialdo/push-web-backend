@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../config/auth')
 const { AdminAccount } = require('../models')
+const { Device } = require('../models');
 
 const signIn = async (req, res) => {
     const { username, password } = req.body;
@@ -41,9 +42,20 @@ const signOut = (req, res) => {
 	  message: 'Signed out'
 	});
 };
-  
 
-module.exports = { signIn, signOut };
+const deviceLogout = async (req, res) => {
+	// const { nip } = req.user;
+	const { token, platform } = req.body;
+  
+	await Device.update(
+	  { isActive: false },
+	  { where: { token, platform } }
+	);
+  
+	res.json({ success: true });
+};
+  
+module.exports = { signIn, signOut, deviceLogout };
 
     // signup(req, res) {
 	// 	return User

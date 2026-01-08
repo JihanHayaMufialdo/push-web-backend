@@ -46,7 +46,7 @@ const getNotificationById = async (req, res) => {
 
 const sendToTopic = async (req, res) => {
     const { topicId, title, body, link } = req.body;
-    const username = req.user.username;
+    const { username } = req.user;
   
     try {
       // Get topic
@@ -105,7 +105,7 @@ const sendToTopic = async (req, res) => {
 
 const sendToUsers = async (req, res) => {
     const { nips, title, body, link } = req.body;
-    const username = req.user.username;
+    const { username } = req.user;
   
     try {
       // Get devices

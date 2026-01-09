@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   DeviceNotification.init({
-    deviceId: DataTypes.INTEGER,
+    deviceId: DataTypes.STRING,
     notificationId: DataTypes.INTEGER,
     status: DataTypes.ENUM('sent', 'failed')
   }, {

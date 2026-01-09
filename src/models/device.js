@@ -25,6 +25,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Device.init({
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false
+    },
     token: DataTypes.TEXT,
     platform: DataTypes.ENUM('ios','android','web'),
     isActive: DataTypes.BOOLEAN,

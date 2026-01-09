@@ -1,22 +1,19 @@
-// const { where } = require('sequelize');
 const { Device } = require('../models');
 
 const pushToken = async (req, res) => {
-    const { nip, token, platform } = req.body
+    const { nip, token, platform, id } = req.body
 
     if(!token){
         return res.status(400).json({ error: 'Token is required' });
     }
 
     try {
-        const device = await Device.findOne({ where: { token, nip, platform } });
+        const device = await Device.findOne({ where: { id } });
 
         if (device) {
-          if (!device.isActive) {
-            await device.update({ isActive: true });
-          }
+            await device.update({ token, isActive: true });
         } else {
-          await Device.create({ token, nip, platform, isActive: true });
+            await Device.create({ id, token, nip, platform, isActive: true });
         }
     
     
@@ -24,6 +21,17 @@ const pushToken = async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+};
+
+const deviceLogout = async (req, res) => {
+	const { id, token } = req.body;
+  
+	await Device.update(
+	  { isActive: false },
+	  { where: { id, token } }
+	);
+  
+	res.json({ success: true });
 };
 
 const getDevices = async (req, res) => {
@@ -42,4 +50,4 @@ const getDevices = async (req, res) => {
     }
 };
 
-module.exports = { pushToken, getDevices };
+module.exports = { pushToken, deviceLogout, getDevices };

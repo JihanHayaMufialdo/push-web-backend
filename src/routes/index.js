@@ -3,13 +3,13 @@ const express = require("express");
 const userAuth = require('../middleware/auth.js');
 const adminAuth =  require('../middleware/adminAuth.js')
 const { User } = require('../models');
-const { pushToken, getDevices } = require('../controllers/device.controllers.js');
+const { pushToken, deviceLogout, getDevices } = require('../controllers/device.controllers.js');
 const { getUserNotifications } = require("../controllers/notification.controllers.js");
 const { getAllDevices, getActiveDevices } = require('../controllers/admin/device.controllers.js');
 const { sendToTopic, sendToUsers, getNotifications, getNotificationById, getNotificationUsers } = require("../controllers/admin/notification.controllers.js");
 const { createTopic, assignUsersToTopic, getTopics, getTopicUsers, getTopicNotifications, updateTopic, unassignUsersFromTopic, getTopicById } = require("../controllers/admin/topic.controllers.js");
 const { getUserTopics, getUserDevices, getEachUserNotifications } = require("../controllers/admin/user.controllers.js");
-const { signIn, signOut, deviceLogout } = require("../controllers/auth.controllers.js");
+const { signIn, signOut } = require("../controllers/auth.controllers.js");
 
 const router = express.Router();
 

@@ -124,6 +124,7 @@ const sendToUsers = async (req, res) => {
         body,
         sendBy: username,
         link,
+        status: 'queued'
       });
 
       // Send via FCM

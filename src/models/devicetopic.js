@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   DeviceTopic.init({
     topicId: DataTypes.INTEGER,
-    deviceId: DataTypes.INTEGER
+    deviceId: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'DeviceTopic',

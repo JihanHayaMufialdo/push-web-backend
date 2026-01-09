@@ -42,20 +42,8 @@ const signOut = (req, res) => {
 	  message: 'Signed out'
 	});
 };
-
-const deviceLogout = async (req, res) => {
-	// const { nip } = req.user;
-	const { token, platform } = req.body;
   
-	await Device.update(
-	  { isActive: false },
-	  { where: { token, platform } }
-	);
-  
-	res.json({ success: true });
-};
-  
-module.exports = { signIn, signOut, deviceLogout };
+module.exports = { signIn, signOut };
 
     // signup(req, res) {
 	// 	return User

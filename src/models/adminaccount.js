@@ -17,8 +17,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     password: DataTypes.STRING,
-    nip: DataTypes.STRING,
-    role: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'AdminAccount',

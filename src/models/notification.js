@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     link: DataTypes.STRING,
     topicId: DataTypes.INTEGER,
     status: DataTypes.ENUM('queued','sent','failed'),
+    readAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Notification',

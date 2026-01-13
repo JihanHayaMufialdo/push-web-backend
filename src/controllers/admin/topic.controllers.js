@@ -1,4 +1,4 @@
-const { AdminAccount, Device, Topic, DeviceTopic, Notification, User } = require('../../models');
+const { Device, Topic, DeviceTopic, Notification, User } = require('../../models');
 const admin = require('../../config/firebase-admin');
 
 const getTopics = async (req, res) => {
@@ -50,9 +50,11 @@ const createTopic = async (req, res) => {
         return res.status(400).json({ error: 'Name and description is required' });
     }
 
+    const names = name.toUpperCase();
+
     try {
         const topic = await Topic.findOrCreate({
-            where: { name, description }
+            where: { name: names, description }
         });
     
         res.status(201).json({ 

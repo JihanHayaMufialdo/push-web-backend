@@ -4,18 +4,24 @@ const userAuth = require('../middleware/auth.js');
 const adminAuth =  require('../middleware/adminAuth.js')
 const { User } = require('../models');
 const { pushToken, deviceLogout, getDevices } = require('../controllers/device.controllers.js');
-const { getUserNotifications } = require("../controllers/notification.controllers.js");
+const { getUserNotifications, countUnread } = require("../controllers/notification.controllers.js");
 const { getAllDevices, getActiveDevices } = require('../controllers/admin/device.controllers.js');
 const { sendToTopic, sendToUsers, getNotifications, getNotificationById, getNotificationUsers } = require("../controllers/admin/notification.controllers.js");
 const { createTopic, assignUsersToTopic, getTopics, getTopicUsers, getTopicNotifications, updateTopic, unassignUsersFromTopic, getTopicById } = require("../controllers/admin/topic.controllers.js");
 const { getUserTopics, getUserDevices, getEachUserNotifications } = require("../controllers/admin/user.controllers.js");
 const { signIn, signOut } = require("../controllers/auth.controllers.js");
+const { sendFromServer } = require("../controllers/admin/send.controller.js");
+const serverAuth = require("../middleware/serverAuth.js");
 
 const router = express.Router();
 
 router.get("/", (req, res) => {
     res.send("Push Notification API");
 });
+
+router.get('/send', serverAuth, sendFromServer);
+// router.get('/count-message', userAuth, countUnread);
+router.get('/count-message', userAuth, countUnread);
 
 router.post('/auth/signin', signIn);
 router.post('/auth/signout', signOut);

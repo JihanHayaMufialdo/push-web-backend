@@ -8,7 +8,7 @@ const getUserDevices = async (req, res) => {
             where: {
                 nip
             },
-            attributes: ['platform','isActive']
+            attributes: ['id','platform','isActive']
         });
         res.json({message: "Request success", devices});
     } catch (err) {

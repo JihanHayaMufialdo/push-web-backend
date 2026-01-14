@@ -37,7 +37,7 @@ const sendFromServer = async (req, res) => {
         try {
             await admin.messaging().send({
                 topic: name,
-                data: { body: text, update_badge: 'true' }
+                data: { body: text }
             });
             
             await notification.update({ status: 'sent' });
@@ -74,11 +74,9 @@ const sendFromServer = async (req, res) => {
             status: 'queued'
         });
 
-        console.log('data', notification)
-
         const response = await admin.messaging().sendEachForMulticast({
             tokens,
-            data: { body: text, update_badge: 'true' }
+            data: { body: text }
         });
 
         const FATAL_ERRORS = [

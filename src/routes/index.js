@@ -4,7 +4,7 @@ const userAuth = require('../middleware/auth.js');
 const adminAuth =  require('../middleware/adminAuth.js')
 const { User } = require('../models');
 const { pushToken, deviceLogout, getDevices } = require('../controllers/device.controllers.js');
-const { getUserNotifications, countUnread } = require("../controllers/notification.controllers.js");
+const { getUserNotifications, countUnread, markAsRead } = require("../controllers/notification.controllers.js");
 const { getAllDevices, getActiveDevices } = require('../controllers/admin/device.controllers.js');
 const { sendToTopic, sendToUsers, getNotifications, getNotificationById, getNotificationUsers } = require("../controllers/admin/notification.controllers.js");
 const { createTopic, assignUsersToTopic, getTopics, getTopicUsers, getTopicNotifications, updateTopic, unassignUsersFromTopic, getTopicById } = require("../controllers/admin/topic.controllers.js");
@@ -20,8 +20,6 @@ router.get("/", (req, res) => {
 });
 
 router.get('/send', serverAuth, sendFromServer);
-// router.get('/count-message', userAuth, countUnread);
-router.get('/count-message', userAuth, countUnread);
 
 router.post('/auth/signin', signIn);
 router.post('/auth/signout', signOut);
@@ -51,7 +49,9 @@ router.get('/admin/user/:nip/notifications', adminAuth, getEachUserNotifications
 router.post('/push-token', pushToken);
 router.put('/logout', deviceLogout);
 router.get('/user-devices', userAuth, getDevices);
-router.get('/user-notifications', userAuth, getUserNotifications);
+router.post('/user-notifications', userAuth, getUserNotifications);
+router.post('/count-unread', userAuth, countUnread);
+router.post('/mark-read', userAuth, markAsRead);
 
 router.get('/admin/users', async (req, res) => {
     try {
